@@ -21,7 +21,7 @@ type Config struct {
 }
 
 var mux sync.Mutex;
-var catch map[string]*redis.Pool;
+var catch map[string]*redis.Pool = make(map[string]*redis.Pool);
 
 func NewClient(c *Config) (*RedisClient,error) {
 	pool := getPool(c);
