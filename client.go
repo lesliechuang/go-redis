@@ -20,7 +20,7 @@ type Config struct {
 	DbNum int
 }
 
-var mux sync.Mutex;
+var mu sync.Mutex;
 var catch map[string]*redis.Pool = make(map[string]*redis.Pool);
 
 func NewClient(c *Config) (*RedisClient,error) {
@@ -35,11 +35,12 @@ func getPool(c *Config) *redis.Pool {
 
 	pool,ok := catch[serve];
 	if !ok {
-		mux.Lock();
+		mu.Lock();
 		pool,ok = catch[serve];
 		if !ok {
 			pool = &redis.Pool{
 				MaxIdle:3,
+				MaxActive:10,
 				Dial:func()(redis.Conn,error) {
 					c,err := redis.Dial("tcp",serve,
 					redis.DialPassword(c.Password),
@@ -57,7 +58,7 @@ func getPool(c *Config) *redis.Pool {
 			catch[serve] = pool;
 		}
 
-		mux.Unlock();
+		mu.Unlock();
 	}
 
 	return pool;
