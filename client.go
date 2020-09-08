@@ -5,10 +5,12 @@ import (
 	"time"
 	"fmt"
 	"sync"
+	"strconv"
 )
 
 type RedisClient struct {
 	c redis.Conn
+	Addr string
 }
 
 type Config struct {
@@ -25,7 +27,10 @@ var catch map[string]*redis.Pool = make(map[string]*redis.Pool);
 
 func NewClient(c *Config) (*RedisClient,error) {
 	pool := getPool(c);
-	client := &RedisClient{pool.Get()};
+	client := &RedisClient{
+		c:pool.Get(),
+		Addr:c.Ip+":"+strconv.Itoa(c.Port),
+	};
 	
 	return client,nil;
 }
